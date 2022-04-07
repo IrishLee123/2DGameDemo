@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Script.Utils
@@ -9,9 +10,11 @@ namespace Script.Utils
 
         private int mEnterCount;
 
+        private List<Collider2D> results = new List<Collider2D>();
+
         public int EnterCount
         {
-            get { return mEnterCount; }
+            get { return results.Count; }
         }
 
         public bool Triggered
@@ -23,7 +26,7 @@ namespace Script.Utils
         {
             if (IsInLayerMask(col.gameObject, TargetLayer))
             {
-                mEnterCount++;
+                results.Add(col);
             }
         }
 
@@ -31,7 +34,7 @@ namespace Script.Utils
         {
             if (IsInLayerMask(other.gameObject, TargetLayer))
             {
-                mEnterCount--;
+                results.Remove(other);
             }
         }
 

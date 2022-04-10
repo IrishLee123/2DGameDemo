@@ -1,33 +1,43 @@
-using System;
 using System.Collections.Generic;
 using Script.Utils;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public enum EnemyState
 {
     PatrolState,
+    ChasingState,
     AttackState
 }
 
 public class Enemy : MonoBehaviour
 {
-    private EnemyBaseState currentState;
+    [HideInInspector] public Animator myAnimator;
 
     [Header("Movement")] public float speed;
     public List<Transform> pointList;
     protected int CurrentPoint;
-    public Transform targetPoint;
 
+    public Transform targetPoint;
     public List<Transform> attackList = new List<Transform>();
 
     [Header("Environment Check")] public Trigger2DCheck frontCheck;
 
+    private EnemyBaseState currentState;
     private Dictionary<EnemyState, EnemyBaseState> stateMap = new Dictionary<EnemyState, EnemyBaseState>();
 
     private void Awake()
     {
         stateMap.Add(EnemyState.PatrolState, new PatrolState());
+        stateMap.Add(EnemyState.ChasingState, new ChasingState());
         stateMap.Add(EnemyState.AttackState, new AttackState());
+
+        Init();
+    }
+
+    protected virtual void Init()
+    {
+        myAnimator = GetComponentInChildren<Animator>();
     }
 
     private void Start()
@@ -80,6 +90,29 @@ public class Enemy : MonoBehaviour
     {
         CurrentPoint = 0;
         targetPoint = pointList[CurrentPoint];
+        
+        // 更新朝向
+        FlipDirection();
+    }
+
+    public bool ArriveTargetPoint(float range = 0.01f)
+    {
+        var position = transform.position;
+        var targetPos = new Vector2(targetPoint.position.x, position.y);
+        return Mathf.Abs(targetPos.x - transform.transform.position.x) < range;
+    }
+
+    public void SetNextPoint()
+    {
+        // 更新目标点
+        CurrentPoint++;
+        if (CurrentPoint > pointList.Count - 1)
+            CurrentPoint = 0;
+
+        targetPoint = pointList[CurrentPoint];
+
+        // 更新朝向
+        FlipDirection();
     }
 
     public void MoveToTarget()
@@ -88,19 +121,6 @@ public class Enemy : MonoBehaviour
         var targetPos = new Vector2(targetPoint.position.x, position.y);
         position = Vector2.MoveTowards(position, targetPos, speed * Time.deltaTime);
         transform.position = position;
-
-        if (Mathf.Abs(targetPos.x - transform.transform.position.x) < 0.01f)
-        {
-            // 更新目标点
-            CurrentPoint++;
-            if (CurrentPoint > pointList.Count - 1)
-                CurrentPoint = 0;
-
-            targetPoint = pointList[CurrentPoint];
-
-            // 更新朝向
-            FlipDirection();
-        }
     }
 
     protected virtual void AttackAction()

@@ -311,8 +311,8 @@ GameObject:
   - component: {fileID: 129309378}
   m_Layer: 8
   m_Name: Player
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
+  m_TagString: Player
+  m_Icon: {fileID: 3936346786652291628, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
@@ -4161,8 +4161,8 @@ GameObject:
   - component: {fileID: 1279849424}
   m_Layer: 10
   m_Name: Cucumber
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
+  m_TagString: Enemy
+  m_Icon: {fileID: 5132851093641282708, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
@@ -4241,6 +4241,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0a51d18291afc8a45a441fc115c98075, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  myAnimator: {fileID: 40096922}
   speed: 2.5
   pointList:
   - {fileID: 1320241170}

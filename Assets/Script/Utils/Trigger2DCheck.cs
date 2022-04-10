@@ -12,6 +12,8 @@ namespace Script.Utils
 
         private List<Collider2D> results = new List<Collider2D>();
 
+        public Action<List<Collider2D>> OnTriggerChanged = list => { };
+
         public int EnterCount
         {
             get { return results.Count; }
@@ -27,6 +29,7 @@ namespace Script.Utils
             if (IsInLayerMask(col.gameObject, TargetLayer))
             {
                 results.Add(col);
+                OnTriggerChanged.Invoke(results);
             }
         }
 
@@ -35,6 +38,7 @@ namespace Script.Utils
             if (IsInLayerMask(other.gameObject, TargetLayer))
             {
                 results.Remove(other);
+                OnTriggerChanged.Invoke(results);
             }
         }
 

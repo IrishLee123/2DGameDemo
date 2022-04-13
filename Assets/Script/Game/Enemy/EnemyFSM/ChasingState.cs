@@ -14,6 +14,7 @@ public class ChasingState : EnemyBaseState
 
     public override void OnEnter(Enemy enemy)
     {
+        Debug.Log("enter chasing state.");
         _timer = 0;
     }
 
@@ -50,5 +51,6 @@ public class ChasingState : EnemyBaseState
 
     public override void OnExit(Enemy enemy)
     {
+        Debug.Log("exit chasing state.");
     }
 }

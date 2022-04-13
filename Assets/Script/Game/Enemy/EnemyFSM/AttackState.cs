@@ -12,6 +12,7 @@ public class AttackState : EnemyBaseState
 
     public override void OnEnter(Enemy enemy)
     {
+        Debug.Log("enter attack state.");
         _attackTimer = _waitTimer = 0;
         enemy.myAnimator.SetInteger(State, 2); //设置动画状态机为攻击动画
     }
@@ -41,5 +42,6 @@ public class AttackState : EnemyBaseState
 
     public override void OnExit(Enemy enemy)
     {
+        Debug.Log("exit attack state.");
     }
 }

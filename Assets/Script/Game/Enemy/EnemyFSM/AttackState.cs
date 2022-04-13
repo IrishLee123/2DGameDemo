@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class AttackState : EnemyBaseState
 {
-    private static readonly int State = Animator.StringToHash("State");
+    private static readonly int attackTrigger = Animator.StringToHash("attack");
 
     private static readonly float AttackDuration = 0.5f; //攻击动画时长
     private static readonly float WaitDuration = 2f; //攻击间隔
@@ -14,7 +14,7 @@ public class AttackState : EnemyBaseState
     {
         Debug.Log("enter attack state.");
         _attackTimer = _waitTimer = 0;
-        enemy.myAnimator.SetInteger(State, 2); //设置动画状态机为攻击动画
+        enemy.myAnimator.SetTrigger(attackTrigger); //设置动画状态机为攻击动画
     }
 
     public override void OnUpdate(Enemy enemy)
@@ -23,7 +23,6 @@ public class AttackState : EnemyBaseState
         if (_attackTimer < AttackDuration) return;
 
         //TODO: 进行伤害判定
-        enemy.myAnimator.SetInteger(State, 0); //攻击结束切换动画为idle
 
         _waitTimer += Time.deltaTime;
         if (_waitTimer < WaitDuration) return;

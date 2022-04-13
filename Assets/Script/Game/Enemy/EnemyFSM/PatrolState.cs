@@ -5,8 +5,6 @@ using UnityEngine;
 /// </summary>
 public class PatrolState : EnemyBaseState
 {
-    private static readonly int State = Animator.StringToHash("State");
-
     private static readonly float IdleDuration = 2f;
     private float _idleTimer;
 
@@ -36,14 +34,12 @@ public class PatrolState : EnemyBaseState
         if (!enemy.ArriveTargetPoint()) // 检查是否到达目标点
         {
             enemy.MoveToTarget(); // 未到达目标点继续移动
-            enemy.myAnimator.SetInteger(State, 1); //设置动画状态机为跑步
             return;
         }
 
         _idleTimer += Time.deltaTime;
         if (_idleTimer < IdleDuration) //在切换至下一目标点之前先停留一段时间
         {
-            enemy.myAnimator.SetInteger(State, 0); //设置动画状态机为静止
             return;
         }
 

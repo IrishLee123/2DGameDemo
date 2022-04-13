@@ -6,8 +6,6 @@ using UnityEngine;
 /// </summary>
 public class ChasingState : EnemyBaseState
 {
-    private static readonly int State = Animator.StringToHash("State");
-
     private static readonly float WaitDuration = 2f;
 
     private float _timer;
@@ -27,7 +25,6 @@ public class ChasingState : EnemyBaseState
             _timer += Time.deltaTime;
             if (_timer < WaitDuration)
             {
-                enemy.myAnimator.SetInteger(State, 0); //设置动画为idle
                 return;
             }
 
@@ -42,7 +39,6 @@ public class ChasingState : EnemyBaseState
         if (!enemy.ArriveTargetPoint(1.2f))
         {
             enemy.MoveToTarget(); //继续朝目标移动
-            enemy.myAnimator.SetInteger(State, 1); //设置动画状态机为跑步动画
             return;
         }
 

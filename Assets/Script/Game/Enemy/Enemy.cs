@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Script.Utils;
 using UnityEngine;
@@ -12,6 +13,8 @@ public enum EnemyState
 
 public class Enemy : MonoBehaviour
 {
+    private static readonly int velocity_h = Animator.StringToHash("velocity_h");
+
     [HideInInspector] public Animator myAnimator;
 
     [Header("Movement")] public float speed;
@@ -26,6 +29,10 @@ public class Enemy : MonoBehaviour
     private EnemyBaseState currentState;
     private Dictionary<EnemyState, EnemyBaseState> stateMap = new Dictionary<EnemyState, EnemyBaseState>();
 
+    private Rigidbody2D _rigidbody2D;
+
+    private Vector2 lastPosition;
+
     private void Awake()
     {
         stateMap.Add(EnemyState.PatrolState, new PatrolState());
@@ -38,6 +45,7 @@ public class Enemy : MonoBehaviour
     protected virtual void Init()
     {
         myAnimator = GetComponentInChildren<Animator>();
+        _rigidbody2D = GetComponent<Rigidbody2D>();
     }
 
     private void Start()
@@ -66,11 +74,18 @@ public class Enemy : MonoBehaviour
         });
 
         TransitionToState(EnemyState.PatrolState);
+
+        lastPosition = transform.position;
     }
 
     private void Update()
     {
         currentState?.OnUpdate(this);
+
+        var position = transform.position;
+        var delat = position.x - lastPosition.x;
+        myAnimator.SetFloat(velocity_h, Math.Abs(delat/Time.deltaTime) ); //设置动画状态机参数
+        lastPosition = position;
     }
 
     public bool TransitionToState(EnemyState state)

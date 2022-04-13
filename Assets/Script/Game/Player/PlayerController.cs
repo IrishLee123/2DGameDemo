@@ -2,10 +2,11 @@ using System;
 using Script.Utils;
 using UnityEngine;
 
-public class PlayerController : MonoBehaviour
+public class PlayerController : MonoBehaviour, IHurtable
 {
     public float speed;
     public float jumpForce;
+    public float hp;
 
     private Rigidbody2D rigidbody;
 
@@ -14,9 +15,12 @@ public class PlayerController : MonoBehaviour
     [Header("AttackSetting")] public GameObject bombPrefab;
     public float attackInterval;
 
+    private PlayerAnimation _playerAnimation;
+
     private void Awake()
     {
         rigidbody = transform.GetComponent<Rigidbody2D>();
+        _playerAnimation = transform.GetComponent<PlayerAnimation>();
     }
 
     private void Update()
@@ -65,5 +69,12 @@ public class PlayerController : MonoBehaviour
 
     private void FixedUpdate()
     {
+    }
+
+    public void BeenHurt(float damage)
+    {
+        hp -= damage;
+        _playerAnimation.Hurt();
+        // Debug.Log("HP: " + hp);
     }
 }

@@ -57,4 +57,9 @@ public class PlayerAnimation : MonoBehaviour
         pos.y = transform.position.y - 0.7f;
         EffectController.Instance.ShowLandingEffect(pos);
     }
+
+    public void Hurt()
+    {
+        _animator.SetTrigger("hit");
+    }
 }

@@ -12,6 +12,14 @@ public class CucumberAttacker : MonoBehaviour
         _check.OnTriggerEnterChanged += (list =>
         {
             // 计算伤害
+            foreach (var col in list)
+            {
+                if (col.transform.CompareTag("Player"))
+                {
+                    var player = col.transform.GetComponent<IHurtable>();
+                    player.BeenHurt(1);
+                }
+            }
         });
     }
 }

@@ -1,3 +1,4 @@
+using System.Linq;
 using UnityEngine;
 
 /// <summary>
@@ -16,14 +17,12 @@ public class PatrolState : EnemyBaseState
 
     public override void OnUpdate(Enemy enemy)
     {
-        Transform attackTarget = null;
-        for (var i = 0; i < enemy.attackList.Count; i++)
-        {
-            if (!enemy.attackList[i].CompareTag("Player")) continue;//检查视野范围内是否存在玩家
-            attackTarget = enemy.attackList[i];
-            break;
-        }
-
+        //先找引线点燃的炸弹
+        var attackTarget= enemy.attackList.FirstOrDefault(transform => transform.CompareTag("Bomb") && transform.GetComponent<Bomb>().Triggered);
+        //再找敌人
+        if (attackTarget == null)
+            attackTarget = enemy.attackList.FirstOrDefault(transform => transform.CompareTag("Player"));
+        
         if (attackTarget)
         {
             enemy.targetPoint = attackTarget;//设置玩家为之为目标点

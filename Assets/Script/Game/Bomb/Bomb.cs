@@ -36,6 +36,11 @@ public class Bomb : MonoBehaviour
 
     private void Update()
     {
+        if (!_triggered)
+        {
+            return;
+        }
+        
         if (_timer < 0)
         {
             return;
@@ -45,9 +50,14 @@ public class Bomb : MonoBehaviour
 
         if (_timer < 0)
         {
-            _animator.SetBool("timeout", true);
+            _animator.SetTrigger("explore");
             Expotion();
         }
+    }
+
+    public bool Triggered
+    {
+        get { return _triggered; }
     }
 
     public void Trigger()
@@ -60,6 +70,18 @@ public class Bomb : MonoBehaviour
         _triggered = true;
 
         _animator.SetBool("isOn", true);
+    }
+
+    public void UnTrigger()
+    {
+        if (!_triggered)
+        {
+            return;
+        }
+
+        _triggered = false;
+
+        _animator.SetBool("isOn", false);
     }
 
     public void Expotion()
@@ -81,11 +103,17 @@ public class Bomb : MonoBehaviour
                 Vector3 dir = item.transform.position - transform.position - centerOffset;
                 rig.AddForce(dir.normalized * bombForce, ForceMode2D.Impulse);
 
+                // TODO: 计算位置信息对爆炸范围内的物体施加扭力
                 // if (Math.Abs(dir.normalized.x) > 0.1 && Math.Abs(dir.normalized.y) > 0.1)
                 // {
                 //     double rad = Math.Atan(dir.normalized.y / dir.normalized.x);
-                //     
                 // }
+
+                if (rig.transform.CompareTag("Bomb"))//炸弹爆炸可以引燃炸弹
+                {
+                    var bomb = rig.GetComponent<Bomb>();
+                    bomb.Trigger();
+                }
             }
         }
 

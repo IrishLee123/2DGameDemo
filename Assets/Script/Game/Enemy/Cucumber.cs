@@ -9,4 +9,14 @@ public class Cucumber : Enemy
     {
         base.Init();
     }
+
+    public override void SkillAction()
+    {
+        base.SkillAction();
+
+        if (!targetPoint.CompareTag("Bomb")) return;
+        
+        var bomb = targetPoint.GetComponent<Bomb>();
+        bomb.UnTrigger();
+    }
 }

@@ -12,13 +12,16 @@ public class ChasingState : EnemyBaseState
 
     public override void OnEnter(Enemy enemy)
     {
-        Debug.Log("enter chasing state.");
         _timer = 0;
     }
 
     public override void OnUpdate(Enemy enemy)
     {
-        var attackTarget = enemy.attackList.FirstOrDefault(transform => transform.CompareTag("Player"));
+        //先找引线点燃的炸弹
+        var attackTarget= enemy.attackList.FirstOrDefault(transform => transform.CompareTag("Bomb") && transform.GetComponent<Bomb>().Triggered);
+        //再找敌人
+        if (attackTarget == null)
+            attackTarget = enemy.attackList.FirstOrDefault(transform => transform.CompareTag("Player"));
 
         if (!attackTarget) //是否仍存在攻击目标
         {
@@ -47,6 +50,5 @@ public class ChasingState : EnemyBaseState
 
     public override void OnExit(Enemy enemy)
     {
-        Debug.Log("exit chasing state.");
     }
 }

@@ -138,11 +138,11 @@ public class Enemy : MonoBehaviour
         transform.position = position;
     }
 
-    protected virtual void AttackAction()
+    public virtual void AttackAction()
     {
     }
 
-    protected virtual void SkillAction()
+    public virtual void SkillAction()
     {
     }
 

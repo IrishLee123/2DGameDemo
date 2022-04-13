@@ -4,17 +4,22 @@ using UnityEngine;
 public class AttackState : EnemyBaseState
 {
     private static readonly int attackTrigger = Animator.StringToHash("attack");
+    private static readonly int skillTrigger = Animator.StringToHash("skill");
 
     private static readonly float AttackDuration = 0.5f; //攻击动画时长
     private static readonly float WaitDuration = 2f; //攻击间隔
 
     private float _attackTimer, _waitTimer;
 
+    private bool attackPlayer = false;
+
     public override void OnEnter(Enemy enemy)
     {
-        Debug.Log("enter attack state.");
         _attackTimer = _waitTimer = 0;
-        enemy.myAnimator.SetTrigger(attackTrigger); //设置动画状态机为攻击动画
+
+        attackPlayer = enemy.targetPoint.CompareTag("Player");
+
+        enemy.myAnimator.SetTrigger(attackPlayer ? attackTrigger : skillTrigger);
     }
 
     public override void OnUpdate(Enemy enemy)
@@ -27,7 +32,11 @@ public class AttackState : EnemyBaseState
         _waitTimer += Time.deltaTime;
         if (_waitTimer < WaitDuration) return;
 
-        var attackTarget = enemy.attackList.FirstOrDefault(t => t.CompareTag("Player"));
+        //先找引线点燃的炸弹
+        var attackTarget= enemy.attackList.FirstOrDefault(transform => transform.CompareTag("Bomb") && transform.GetComponent<Bomb>().Triggered);
+        //再找敌人
+        if (attackTarget == null)
+            attackTarget = enemy.attackList.FirstOrDefault(transform => transform.CompareTag("Player"));
 
         if (!attackTarget) //是否仍存在攻击目标
         {
@@ -41,6 +50,5 @@ public class AttackState : EnemyBaseState
 
     public override void OnExit(Enemy enemy)
     {
-        Debug.Log("exit attack state.");
     }
 }

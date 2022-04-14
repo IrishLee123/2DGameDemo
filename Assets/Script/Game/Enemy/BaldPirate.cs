@@ -3,13 +3,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Cucumber : Enemy
+public class BaldPirate : Enemy
 {
     [HideInInspector] public Animator myAnimator;
     private static readonly int VelocityH = Animator.StringToHash("velocity_h");
     private static readonly int Hit = Animator.StringToHash("hit");
-    private static readonly int AttackTrigger = Animator.StringToHash("attack");
-    private static readonly int SkillTrigger = Animator.StringToHash("skill");
+    private static readonly int AttackTrigger = Animator.StringToHash("kick");
 
     private Vector2 _lastPosition;
 
@@ -50,7 +49,7 @@ public class Cucumber : Enemy
     public override void SkillAction()
     {
         base.SkillAction();
-        myAnimator.SetTrigger(SkillTrigger);
+        myAnimator.SetTrigger(AttackTrigger);
     }
 
     public void OnBlowOffBomb(List<Collider2D> list)

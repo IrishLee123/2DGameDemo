@@ -28,6 +28,7 @@ public class Enemy : MonoBehaviour, IHurtable
     [Tooltip("追击时丢失目标后等待的时长")] public float lossTargetWaitDuration;
     [Tooltip("攻击动作持续的时长")] public float atkDuration;
     [Tooltip("两次攻击间隔时长")] public float atkWaitDuration;
+    [Tooltip("攻击距离")] public float atkRange;
 
     public Transform targetPoint;
     public List<Transform> attackList = new List<Transform>();

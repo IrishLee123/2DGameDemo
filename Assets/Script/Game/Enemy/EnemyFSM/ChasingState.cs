@@ -33,7 +33,7 @@ public class ChasingState : EnemyBaseState
         enemy.targetPoint = attackTarget; //持续更新目标
         _timer = 0; //有敌人重置等待时间
 
-        if (!enemy.ArriveTargetPoint(1.2f))
+        if (!enemy.ArriveTargetPoint(enemy.atkRange))
         {
             enemy.MoveToTarget(); //继续朝目标移动
             return;

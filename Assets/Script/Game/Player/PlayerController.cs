@@ -1,6 +1,7 @@
 using System;
 using Script.Utils;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class PlayerController : MonoBehaviour, IHurtable
 {
@@ -8,9 +9,9 @@ public class PlayerController : MonoBehaviour, IHurtable
     public float jumpForce;
     public float hp;
 
-    private Rigidbody2D rigidbody;
+    private Rigidbody2D _rigidbody;
 
-    [Header("Environment Check")] public Trigger2DCheck GroundCheck;
+    [Header("Environment Check")] public Trigger2DCheck groundCheck;
 
     [Header("AttackSetting")] public GameObject bombPrefab;
     public float attackInterval;
@@ -19,7 +20,7 @@ public class PlayerController : MonoBehaviour, IHurtable
 
     private void Awake()
     {
-        rigidbody = transform.GetComponent<Rigidbody2D>();
+        _rigidbody = transform.GetComponent<Rigidbody2D>();
         _playerAnimation = transform.GetComponent<PlayerAnimation>();
     }
 
@@ -33,18 +34,18 @@ public class PlayerController : MonoBehaviour, IHurtable
         // float horizontalInput = Input.GetAxisRaw("Horizontal"); // -1 ~ 1
         float horizontalInput = Input.GetAxis("Horizontal"); // -1 ~ 1
 
-        rigidbody.velocity = new Vector2(horizontalInput * speed, rigidbody.velocity.y);
+        _rigidbody.velocity = new Vector2(horizontalInput * speed, _rigidbody.velocity.y);
         if (horizontalInput != 0)
         {
             var scaleX = horizontalInput < 0 ? -1 : 1;
             transform.localScale = new Vector3(scaleX, 1, 1);
         }
 
-        if (Input.GetKeyDown(KeyCode.Space) && GroundCheck.Triggered)
+        if (Input.GetKeyDown(KeyCode.Space) && groundCheck.Triggered)
         {
-            var velocity = rigidbody.velocity;
+            var velocity = _rigidbody.velocity;
             velocity = new Vector2(velocity.x, velocity.y + jumpForce);
-            rigidbody.velocity = velocity;
+            _rigidbody.velocity = velocity;
         }
 
         if (Input.GetKeyDown(KeyCode.J))

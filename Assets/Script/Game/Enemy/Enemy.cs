@@ -1,8 +1,8 @@
-using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using Script.Utils;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 public enum EnemyState
 {
@@ -11,41 +11,41 @@ public enum EnemyState
     AttackState
 }
 
-public class Enemy : MonoBehaviour
+public enum EnemyAtkPriority
 {
-    private static readonly int velocity_h = Animator.StringToHash("velocity_h");
+    PlayerFirst,
+    BombFirst,
+    DistanceFirst
+}
 
-    [HideInInspector] public Animator myAnimator;
-
-    [Header("Movement")] public float speed;
-    public List<Transform> pointList;
-    protected int CurrentPoint;
+public class Enemy : MonoBehaviour, IHurtable
+{
+    [Header("Setting")] [Tooltip("敌人血量")] public float hp;
+    [Tooltip("移动速度")] public float speed;
+    [Tooltip("巡逻目标点")] public List<Transform> pointList;
+    [Tooltip("攻击方式")] public EnemyAtkPriority atkPriority;
+    [Tooltip("巡逻时在目标点停留的时长")] public float arriveWaitDuration;
+    [Tooltip("追击时丢失目标后等待的时长")] public float lossTargetWaitDuration;
+    [Tooltip("攻击动作持续的时长")] public float atkDuration;
+    [Tooltip("两次攻击间隔时长")] public float atkWaitDuration;
 
     public Transform targetPoint;
     public List<Transform> attackList = new List<Transform>();
 
     [Header("Environment Check")] public Trigger2DCheck frontCheck;
 
-    private EnemyBaseState currentState;
-    private Dictionary<EnemyState, EnemyBaseState> stateMap = new Dictionary<EnemyState, EnemyBaseState>();
+    protected Dictionary<EnemyState, EnemyBaseState> stateMap = new Dictionary<EnemyState, EnemyBaseState>();
+    protected EnemyBaseState currentState;
 
-    private Rigidbody2D _rigidbody2D;
-
-    private Vector2 lastPosition;
+    protected int currentPointIdx;
 
     private void Awake()
     {
-        stateMap.Add(EnemyState.PatrolState, new PatrolState());
-        stateMap.Add(EnemyState.ChasingState, new ChasingState());
-        stateMap.Add(EnemyState.AttackState, new AttackState());
-
         Init();
     }
 
     protected virtual void Init()
     {
-        myAnimator = GetComponentInChildren<Animator>();
-        _rigidbody2D = GetComponent<Rigidbody2D>();
     }
 
     private void Start()
@@ -74,18 +74,17 @@ public class Enemy : MonoBehaviour
         });
 
         TransitionToState(EnemyState.PatrolState);
-
-        lastPosition = transform.position;
     }
 
     private void Update()
     {
         currentState?.OnUpdate(this);
 
-        var position = transform.position;
-        var delat = position.x - lastPosition.x;
-        myAnimator.SetFloat(velocity_h, Math.Abs(delat/Time.deltaTime) ); //设置动画状态机参数
-        lastPosition = position;
+        OnUpdate();
+    }
+
+    protected virtual void OnUpdate()
+    {
     }
 
     public bool TransitionToState(EnemyState state)
@@ -103,9 +102,9 @@ public class Enemy : MonoBehaviour
 
     public void ResetTargetPoint()
     {
-        CurrentPoint = 0;
-        targetPoint = pointList[CurrentPoint];
-        
+        currentPointIdx = 0;
+        targetPoint = pointList[currentPointIdx];
+
         // 更新朝向
         FlipDirection();
     }
@@ -120,11 +119,11 @@ public class Enemy : MonoBehaviour
     public void SetNextPoint()
     {
         // 更新目标点
-        CurrentPoint++;
-        if (CurrentPoint > pointList.Count - 1)
-            CurrentPoint = 0;
+        currentPointIdx++;
+        if (currentPointIdx > pointList.Count - 1)
+            currentPointIdx = 0;
 
-        targetPoint = pointList[CurrentPoint];
+        targetPoint = pointList[currentPointIdx];
 
         // 更新朝向
         FlipDirection();
@@ -146,7 +145,7 @@ public class Enemy : MonoBehaviour
     {
     }
 
-    protected virtual void FlipDirection()
+    private void FlipDirection()
     {
         var scale = transform.localScale;
         if (targetPoint.position.x < transform.position.x)
@@ -154,5 +153,9 @@ public class Enemy : MonoBehaviour
         else
             scale.x = 1;
         transform.localScale = scale;
+    }
+
+    public virtual void BeenHurt(float damage)
+    {
     }
 }

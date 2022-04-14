@@ -1,42 +1,33 @@
-using System.Linq;
 using UnityEngine;
 
+/// <summary>
+/// 攻击状态
+/// </summary>
 public class AttackState : EnemyBaseState
 {
-    private static readonly int attackTrigger = Animator.StringToHash("attack");
-    private static readonly int skillTrigger = Animator.StringToHash("skill");
-
-    private static readonly float AttackDuration = 0.5f; //攻击动画时长
-    private static readonly float WaitDuration = 2f; //攻击间隔
-
     private float _attackTimer, _waitTimer;
-
-    private bool attackPlayer = false;
 
     public override void OnEnter(Enemy enemy)
     {
         _attackTimer = _waitTimer = 0;
 
-        attackPlayer = enemy.targetPoint.CompareTag("Player");
-
-        enemy.myAnimator.SetTrigger(attackPlayer ? attackTrigger : skillTrigger);
+        if (enemy.targetPoint.CompareTag("Player"))
+            enemy.AttackAction();
+        else
+            enemy.SkillAction();
     }
 
     public override void OnUpdate(Enemy enemy)
     {
         _attackTimer += Time.deltaTime;
-        if (_attackTimer < AttackDuration) return;
+        if (_attackTimer < enemy.atkDuration) return;
 
         //TODO: 进行伤害判定
 
         _waitTimer += Time.deltaTime;
-        if (_waitTimer < WaitDuration) return;
+        if (_waitTimer < enemy.atkWaitDuration) return;
 
-        //先找引线点燃的炸弹
-        var attackTarget= enemy.attackList.FirstOrDefault(transform => transform.CompareTag("Bomb") && transform.GetComponent<Bomb>().Triggered);
-        //再找敌人
-        if (attackTarget == null)
-            attackTarget = enemy.attackList.FirstOrDefault(transform => transform.CompareTag("Player"));
+        var attackTarget = FindTarget(enemy);
 
         if (!attackTarget) //是否仍存在攻击目标
         {

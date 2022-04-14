@@ -1,4 +1,3 @@
-using System.Linq;
 using UnityEngine;
 
 /// <summary>
@@ -6,7 +5,6 @@ using UnityEngine;
 /// </summary>
 public class PatrolState : EnemyBaseState
 {
-    private static readonly float IdleDuration = 2f;
     private float _idleTimer;
 
     public override void OnEnter(Enemy enemy)
@@ -17,16 +15,12 @@ public class PatrolState : EnemyBaseState
 
     public override void OnUpdate(Enemy enemy)
     {
-        //先找引线点燃的炸弹
-        var attackTarget= enemy.attackList.FirstOrDefault(transform => transform.CompareTag("Bomb") && transform.GetComponent<Bomb>().Triggered);
-        //再找敌人
-        if (attackTarget == null)
-            attackTarget = enemy.attackList.FirstOrDefault(transform => transform.CompareTag("Player"));
+        var attackTarget = FindTarget(enemy);
         
-        if (attackTarget)
+        if (attackTarget)//找到目标
         {
-            enemy.targetPoint = attackTarget;//设置玩家为之为目标点
-            enemy.TransitionToState(EnemyState.ChasingState);//切换追击状态
+            enemy.targetPoint = attackTarget; //设置玩家为之为目标点
+            enemy.TransitionToState(EnemyState.ChasingState); //切换追击状态
             return;
         }
 
@@ -37,7 +31,7 @@ public class PatrolState : EnemyBaseState
         }
 
         _idleTimer += Time.deltaTime;
-        if (_idleTimer < IdleDuration) //在切换至下一目标点之前先停留一段时间
+        if (_idleTimer < enemy.arriveWaitDuration) //在切换至下一目标点之前先停留一段时间
         {
             return;
         }

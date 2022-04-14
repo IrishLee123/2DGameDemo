@@ -1,10 +1,15 @@
-using System;
 using System.Collections.Generic;
 using Script.Utils;
 using UnityEngine;
+using UnityEngine.Events;
 
-public class CucumberBlower : MonoBehaviour
+/// <summary>
+/// 当攻击行为触发时调用OnAction，便于不类型的Enemy作出不同响应
+/// </summary>
+public class ActionTrigger : MonoBehaviour
 {
+    public UnityEvent<List<Collider2D>> onAction;
+
     private Trigger2DCheck _check;
 
     private void Awake()
@@ -24,10 +29,6 @@ public class CucumberBlower : MonoBehaviour
 
     private void DoAction(List<Collider2D> list)
     {
-        foreach (var col in list)
-        {
-            var bomb = col.transform.GetComponent<Bomb>();
-            bomb.UnTrigger();//吹灭炸弹
-        }
+        onAction.Invoke(list);
     }
 }

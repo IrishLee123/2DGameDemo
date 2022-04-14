@@ -6,8 +6,6 @@ using UnityEngine;
 /// </summary>
 public class ChasingState : EnemyBaseState
 {
-    private static readonly float WaitDuration = 2f;
-
     private float _timer;
 
     public override void OnEnter(Enemy enemy)
@@ -17,16 +15,12 @@ public class ChasingState : EnemyBaseState
 
     public override void OnUpdate(Enemy enemy)
     {
-        //先找引线点燃的炸弹
-        var attackTarget= enemy.attackList.FirstOrDefault(transform => transform.CompareTag("Bomb") && transform.GetComponent<Bomb>().Triggered);
-        //再找敌人
-        if (attackTarget == null)
-            attackTarget = enemy.attackList.FirstOrDefault(transform => transform.CompareTag("Player"));
+        var attackTarget = FindTarget(enemy);
 
         if (!attackTarget) //是否仍存在攻击目标
         {
             _timer += Time.deltaTime;
-            if (_timer < WaitDuration)
+            if (_timer < enemy.lossTargetWaitDuration)
             {
                 return;
             }

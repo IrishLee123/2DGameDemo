@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class Bomb : MonoBehaviour
 {
-    public float countdown;
+    [Header("Setting")] public float countdown;
     public float bombForce;
     public Vector3 centerOffset;
 
@@ -11,10 +11,12 @@ public class Bomb : MonoBehaviour
     public LayerMask targetLayer;
 
     private Animator _animator;
+    private static readonly int Explore = Animator.StringToHash("explore");
+    private static readonly int IsOn = Animator.StringToHash("isOn");
+
     private Rigidbody2D _rigidbody2D;
 
     private float _timer;
-
     private bool _triggered;
 
     private void Awake()
@@ -40,7 +42,7 @@ public class Bomb : MonoBehaviour
         {
             return;
         }
-        
+
         if (_timer < 0)
         {
             return;
@@ -50,7 +52,7 @@ public class Bomb : MonoBehaviour
 
         if (_timer < 0)
         {
-            _animator.SetTrigger("explore");
+            _animator.SetTrigger(Explore);
             Expotion();
         }
     }
@@ -69,7 +71,7 @@ public class Bomb : MonoBehaviour
 
         _triggered = true;
 
-        _animator.SetBool("isOn", true);
+        _animator.SetBool(IsOn, true);
     }
 
     public void UnTrigger()
@@ -81,7 +83,7 @@ public class Bomb : MonoBehaviour
 
         _triggered = false;
 
-        _animator.SetBool("isOn", false);
+        _animator.SetBool(IsOn, false);
     }
 
     public void Expotion()
@@ -109,17 +111,26 @@ public class Bomb : MonoBehaviour
                 //     double rad = Math.Atan(dir.normalized.y / dir.normalized.x);
                 // }
 
-                if (rig.transform.CompareTag("Bomb"))//炸弹爆炸可以引燃炸弹
+                if (rig.transform.CompareTag("Bomb")) //炸弹爆炸可以引燃炸弹
                 {
                     var bomb = rig.GetComponent<Bomb>();
                     bomb.Trigger();
                 }
+
+                if (rig.transform.CompareTag("Enemy") || rig.transform.CompareTag("Player"))
+                {
+                    var hurtable = rig.GetComponent<IHurtable>();
+                    hurtable.BeenHurt(1);
+                }
             }
         }
 
-        _rigidbody2D.bodyType = RigidbodyType2D.Static;
+        _rigidbody2D.bodyType = RigidbodyType2D.Static;//爆炸后的炸弹不能再继续移动
     }
 
+    /// <summary>
+    /// 爆炸动画播完后销毁炸弹
+    /// </summary>
     public void OnExpFinish()
     {
         Destroy(gameObject);
@@ -127,6 +138,6 @@ public class Bomb : MonoBehaviour
 
     public void OnDrawGizmos()
     {
-        Gizmos.DrawWireSphere(transform.position + centerOffset, radius);
+        Gizmos.DrawWireSphere(transform.position + centerOffset, radius);//绘制炸弹爆炸范围
     }
 }

@@ -47,10 +47,6 @@ public class Enemy : MonoBehaviour, IHurtable
 
     protected virtual void Init()
     {
-    }
-
-    private void Start()
-    {
         frontCheck.OnTriggerChanged += (list =>
         {
             for (var i = 0; i < list.Count; i++)
@@ -73,7 +69,10 @@ public class Enemy : MonoBehaviour, IHurtable
                 attackList.RemoveRange(list.Count, attackList.Count - list.Count);
             }
         });
+    }
 
+    private void Start()
+    {
         TransitionToState(EnemyState.PatrolState);
     }
 
@@ -146,7 +145,7 @@ public class Enemy : MonoBehaviour, IHurtable
     {
     }
 
-    private void FlipDirection()
+    public void FlipDirection()
     {
         var scale = transform.localScale;
         if (targetPoint.position.x < transform.position.x)
@@ -157,6 +156,10 @@ public class Enemy : MonoBehaviour, IHurtable
     }
 
     public virtual void BeenHurt(float damage)
+    {
+    }
+
+    public virtual void OnFindTarget()
     {
     }
 }

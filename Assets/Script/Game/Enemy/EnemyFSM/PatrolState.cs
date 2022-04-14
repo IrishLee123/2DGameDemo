@@ -16,10 +16,13 @@ public class PatrolState : EnemyBaseState
     public override void OnUpdate(Enemy enemy)
     {
         var attackTarget = FindTarget(enemy);
-        
-        if (attackTarget)//找到目标
+
+        if (attackTarget) //找到目标
         {
             enemy.targetPoint = attackTarget; //设置玩家为之为目标点
+
+            enemy.OnFindTarget();
+            
             enemy.TransitionToState(EnemyState.ChasingState); //切换追击状态
             return;
         }

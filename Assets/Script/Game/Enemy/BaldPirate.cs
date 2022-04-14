@@ -73,4 +73,12 @@ public class BaldPirate : Enemy
             }
         }
     }
+
+    public override void OnFindTarget()
+    {
+        base.OnFindTarget();
+        
+        FlipDirection(); //根据目标设定朝向
+        myAnimator.Play("BaldRun");
+    }
 }

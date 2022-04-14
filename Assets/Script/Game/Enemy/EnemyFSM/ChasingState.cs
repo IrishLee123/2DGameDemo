@@ -26,7 +26,9 @@ public class ChasingState : EnemyBaseState
             }
 
             enemy.ResetTargetPoint(); //重置目标点
+
             enemy.TransitionToState(EnemyState.PatrolState); //持续一段时间未发现敌人切换回巡逻状态
+
             return;
         }
 

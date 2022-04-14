@@ -12,31 +12,18 @@ public abstract class EnemyBaseState : BaseState<Enemy>
     /// <returns></returns>
     protected Transform FindTarget<T>(T enemy) where T : Enemy
     {
-        Transform attackTarget; 
+        Transform attackTarget;
         if (enemy.atkPriority == EnemyAtkPriority.PlayerFirst)
             attackTarget = FindPlayerFirst(enemy);
         else if (enemy.atkPriority == EnemyAtkPriority.BombFirst)
             attackTarget = FindBombFirst(enemy);
         else
             attackTarget = FindTargetByDistance(enemy);
-        
+
         return attackTarget;
     }
 
     protected Transform FindPlayerFirst<T>(T enemy) where T : Enemy
-    {
-        //先找引线点燃的炸弹
-        var attackTarget = enemy.attackList.FirstOrDefault(transform =>
-            transform.CompareTag("Bomb") && transform.GetComponent<Bomb>().Triggered);
-
-        //没有炸弹的时候再找敌人
-        if (attackTarget == null)
-            attackTarget = enemy.attackList.FirstOrDefault(transform => transform.CompareTag("Player"));
-
-        return attackTarget; //返回结果
-    }
-
-    protected Transform FindBombFirst<T>(T enemy) where T : Enemy
     {
         //先找敌人
         var attackTarget = enemy.attackList.FirstOrDefault(transform => transform.CompareTag("Player"));
@@ -45,6 +32,19 @@ public abstract class EnemyBaseState : BaseState<Enemy>
         if (attackTarget == null)
             attackTarget = enemy.attackList.FirstOrDefault(transform =>
                 transform.CompareTag("Bomb") && transform.GetComponent<Bomb>().Triggered);
+
+        return attackTarget; //返回结果
+    }
+
+    protected Transform FindBombFirst<T>(T enemy) where T : Enemy
+    {
+        //先找引线点燃的炸弹
+        var attackTarget = enemy.attackList.FirstOrDefault(transform =>
+            transform.CompareTag("Bomb") && transform.GetComponent<Bomb>().Triggered);
+
+        //没有炸弹的时候再找敌人
+        if (attackTarget == null)
+            attackTarget = enemy.attackList.FirstOrDefault(transform => transform.CompareTag("Player"));
 
         return attackTarget; //返回结果
     }

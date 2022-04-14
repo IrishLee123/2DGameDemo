@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class BaldPirate : Enemy
@@ -9,6 +10,8 @@ public class BaldPirate : Enemy
     private static readonly int VelocityH = Animator.StringToHash("velocity_h");
     private static readonly int Hit = Animator.StringToHash("hit");
     private static readonly int AttackTrigger = Animator.StringToHash("kick");
+
+    [Header("Special Setting")] public float kickForce;
 
     private Vector2 _lastPosition;
 
@@ -52,32 +55,43 @@ public class BaldPirate : Enemy
         myAnimator.SetTrigger(AttackTrigger);
     }
 
-    public void OnBlowOffBomb(List<Collider2D> list)
+    public void OnKick(List<Collider2D> list)
     {
-        foreach (var col in list)
-        {
-            var bomb = col.transform.GetComponent<Bomb>();
-            bomb.UnTrigger(); //吹灭炸弹
-        }
-    }
+        bool isPlayer = true;
 
-    public void OnAttackPlayer(List<Collider2D> list)
-    {
-        // 计算伤害
-        foreach (var col in list)
+        //先找玩家
+        var attackTarget = list.FirstOrDefault(col => col.transform.CompareTag("Player"));
+
+        //没有敌人的时候再找引爆中的炸弹
+        if (attackTarget == null)
         {
-            if (col.transform.CompareTag("Player"))
-            {
-                var player = col.transform.GetComponent<IHurtable>();
-                player.BeenHurt(1);
-            }
+            isPlayer = false;
+            attackTarget = list.FirstOrDefault(col =>
+                col.transform.CompareTag("Bomb") && col.transform.GetComponent<Bomb>().Triggered);
+        }
+
+        if (!attackTarget) return;
+
+        if (isPlayer)
+        {
+            //玩家受伤
+            var player = attackTarget.transform.GetComponent<IHurtable>();
+            player.BeenHurt(1);
+        }
+        else
+        {
+            //踢飞炸弹
+            var rig = attackTarget.transform.GetComponent<Rigidbody2D>();
+            Vector3 dir = rig.transform.position - transform.position;
+            dir.y = 0.2f;
+            rig.AddForce(dir.normalized * kickForce, ForceMode2D.Impulse);
         }
     }
 
     public override void OnFindTarget()
     {
         base.OnFindTarget();
-        
+
         FlipDirection(); //根据目标设定朝向
         myAnimator.Play("BaldRun");
     }
